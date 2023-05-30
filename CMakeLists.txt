@@ -46,4 +46,20 @@ string(REGEX REPLACE "[\r\n\"]" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${NODE_ADDON_API_DIR})
 
+target_link_libraries(${PROJECT_NAME} PRIVATE ${AVUTIL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${AVCODEC_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${AVFORMAT_LIBRARIES})
+
+target_link_libraries(
+  ${PROJECT_NAME}
+  PRIVATE
+  ${ALSA_LIBRARIES}
+)
+
+target_link_libraries(
+  ${PROJECT_NAME}
+  PRIVATE
+  Threads::Threads
+)
+
 add_definitions(-DNAPI_VERSION=8)
