@@ -1,0 +1,21 @@
+{
+  "name": "@nocturne/backend",
+  "version": "1.0.0",
+  "description": "Nocturne后端",
+  "main": "dist/index.js",
+  "scripts": {
+    "configure": "cmake-js configure",
+    "build": "cmake-js compile && tsc --build",
+    "buildjs": "tsc --build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-addon-api": "^6.1.0"
+  },
+  "devDependencies": {
+    "cmake-js": "^7.2.1",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
+  }
+}
