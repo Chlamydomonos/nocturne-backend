@@ -105,6 +105,11 @@ WAVDecoder::WAVDecoder(std::string filename) : Decoder(filename)
     seekDataSection(file);
 }
 
+const Metadata &WAVDecoder::getMetadata()
+{
+    return metadata;
+}
+
 Buffer &WAVDecoder::getData(int size)
 {
     buffer.clear();

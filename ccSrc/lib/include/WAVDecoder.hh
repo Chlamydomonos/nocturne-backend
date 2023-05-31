@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Decoder.hh"
 
 #include <fstream>
@@ -27,6 +29,6 @@ private:
 
 public:
     WAVDecoder(std::string fileName);
-    Metadata &getMetadata() override;
+    const Metadata &getMetadata() override;
     Buffer &getData(int size) override;
 };

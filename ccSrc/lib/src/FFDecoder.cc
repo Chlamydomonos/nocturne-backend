@@ -327,7 +327,7 @@ extern "C"
         return true;
     }
 
-    Metadata &FFDecoder::getMetadata()
+    const Metadata &FFDecoder::getMetadata()
     {
         return metadata;
     }

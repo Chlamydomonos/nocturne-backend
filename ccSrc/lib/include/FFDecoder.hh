@@ -46,6 +46,6 @@ private:
 public:
     FFDecoder(std::string fileName);
     ~FFDecoder();
-    Metadata &getMetadata() override;
+    const Metadata &getMetadata() override;
     Buffer &getData(int size) override;
 };

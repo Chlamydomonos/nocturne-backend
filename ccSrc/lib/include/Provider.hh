@@ -8,6 +8,7 @@ using Buffer = std::vector<char>;
 
 class Provider
 {
-    virtual Metadata &getMetadata() = 0;
+public:
+    virtual const Metadata &getMetadata() = 0;
     virtual Buffer &getData(int size) = 0;
 };
