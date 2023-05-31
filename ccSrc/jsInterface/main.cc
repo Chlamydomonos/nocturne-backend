@@ -1,4 +1,3 @@
-#include "Test.hh"
 #include <napi.h>
 
 static Napi::String Method(const Napi::CallbackInfo &info)
@@ -9,9 +8,6 @@ static Napi::String Method(const Napi::CallbackInfo &info)
 
     // Create a C++ level variable
     std::string helloWorld = "Hello, world!";
-
-    Test test;
-    test.print();
 
     // Return a new javascript string that we copy-construct inside of the node.js environment
     return Napi::String::New(env, helloWorld);

@@ -30,7 +30,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-parameter -Wno-attributes")
 
 include_directories(${CMAKE_JS_INC})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ccSrc/lib/include)
+include_directories(ccSrc/lib/include)
 file(GLOB SOURCE_FILES "ccSrc/lib/src/*.cc" "ccSrc/jsInterface/*.cc")
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
