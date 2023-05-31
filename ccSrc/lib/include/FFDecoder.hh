@@ -15,10 +15,10 @@ extern "C"
 class FFDecoder : public Decoder
 {
 private:
-    Metadata metadata;
-    std::deque<char> tempBuffer;
-    Buffer buffer;
-    Buffer tempPlanarBuffer;
+    Metadata metadata{};
+    std::deque<char> tempBuffer{};
+    Buffer buffer{};
+    Buffer tempPlanarBuffer{};
 
     // audio stream format information
     AVFormatContext *formatContext{nullptr};

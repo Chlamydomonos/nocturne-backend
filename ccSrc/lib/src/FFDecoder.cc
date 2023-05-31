@@ -40,7 +40,7 @@ extern "C"
         }
     }
 
-    FFDecoder::FFDecoder(std::string fileName) : Decoder(fileName), metadata(), tempBuffer(), buffer(), tempPlanarBuffer()
+    FFDecoder::FFDecoder(std::string fileName) : Decoder(fileName)
     {
         formatContext = avformat_alloc_context();
         if (!formatContext)
