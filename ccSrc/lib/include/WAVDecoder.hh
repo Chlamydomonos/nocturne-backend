@@ -1,5 +1,7 @@
 #pragma once
 
+#include "nocturne_types.hh"
+
 #include "Decoder.hh"
 
 #include <fstream>
@@ -29,6 +31,6 @@ private:
 
 public:
     WAVDecoder(std::string fileName);
-    const Metadata &getMetadata() override;
-    Buffer &getData(int size) override;
+    ConstRef<Metadata> getMetadata() override;
+    Ref<Buffer> getData(i32 size) override;
 };

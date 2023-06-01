@@ -4,9 +4,12 @@
   "description": "Nocturne后端",
   "main": "dist/index.js",
   "scripts": {
+    "cmkjs": "cmake-js",
     "configure": "cmake-js configure",
-    "build": "cmake-js compile && tsc --build",
-    "buildjs": "tsc --build"
+    "build": "cmake-js build && tsc --build",
+    "buildjs": "tsc --build",
+    "clean": "cmake-js clean",
+    "testwgen": "wrappergen-test"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +17,7 @@
     "node-addon-api": "^6.1.0"
   },
   "devDependencies": {
+    "@nocturne/wrappergen": "file:../wrapperGen",
     "cmake-js": "^7.2.1",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"

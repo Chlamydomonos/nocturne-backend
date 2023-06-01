@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.9)
 cmake_policy(SET CMP0042 NEW)
 set(CMAKE_CXX_STANDARD 17)
 
+message(STATUS "CMAKE_JS_INC: ${CMAKE_JS_INC}")
+
 project(ccLib)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/build_support/cmake)
@@ -30,8 +32,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-parameter -Wno-attributes")
 
 include_directories(${CMAKE_JS_INC})
-include_directories(ccSrc/lib/include)
-file(GLOB SOURCE_FILES "ccSrc/lib/src/*.cc" "ccSrc/jsInterface/*.cc")
+include_directories(ccSrc/lib/include ccSrc/jsInterface/include)
+file(GLOB SOURCE_FILES "ccSrc/lib/src/*.cc" "ccSrc/jsInterface/src/*.cc")
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "nocturne_types.hh"
+
 #include "Metadata.hh"
 
 #include <vector>
@@ -9,6 +11,6 @@ using Buffer = std::vector<char>;
 class Provider
 {
 public:
-    virtual const Metadata &getMetadata() = 0;
-    virtual Buffer &getData(int size) = 0;
+    virtual ConstRef<Metadata> getMetadata() = 0;
+    virtual Ref<Buffer> getData(i32 size) = 0;
 };

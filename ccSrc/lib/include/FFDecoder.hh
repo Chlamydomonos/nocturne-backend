@@ -1,5 +1,7 @@
 #pragma once
 
+#include "nocturne_types.hh"
+
 #include "Decoder.hh"
 
 #include <deque>
@@ -44,8 +46,8 @@ private:
     bool handleData(char **buffer, int *size, unsigned long *frameCount);
 
 public:
-    FFDecoder(std::string fileName);
+    FFDecoder(String fileName);
     ~FFDecoder();
-    const Metadata &getMetadata() override;
-    Buffer &getData(int size) override;
+    ConstRef<Metadata> getMetadata() override;
+    Ref<Buffer> getData(i32 size) override;
 };

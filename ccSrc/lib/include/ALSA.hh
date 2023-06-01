@@ -1,5 +1,7 @@
 #pragma once
 
+#include "nocturne_types.hh"
+
 #include "Provider.hh"
 #include "Metadata.hh"
 
@@ -12,7 +14,7 @@
 class ALSA
 {
 public:
-    ALSA(Provider &provider, int frames = 4096);
+    ALSA(Ref<Provider> provider, HasDefault<i32> frames = 4096);
     ~ALSA();
 
     // play the music in a separate thread
@@ -22,7 +24,7 @@ public:
 
     void resume();
     void pause();
-    void setVolume(int volume);
+    void setVolume(i32 volume);
 
 private:
     bool playInterleave();

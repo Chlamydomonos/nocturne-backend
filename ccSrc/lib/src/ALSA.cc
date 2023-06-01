@@ -1,7 +1,7 @@
 #include "ALSA.hh"
 #include <stdexcept>
 
-#define CK_SND(func, params) checkSnd(func##params, #func)
+#define CK_SND(func, params) checkSnd(func params, #func)
 
 static void checkSnd(int rc, const char *msg)
 {
