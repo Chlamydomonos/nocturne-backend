@@ -14,7 +14,7 @@
 class ALSA
 {
 public:
-    ALSA(Ref<Provider> provider, HasDefault<i32> frames = 4096);
+    ALSA(Ref<Provider> provider, HasDefault<u32> frames = 4096);
     ~ALSA();
 
     // play the music in a separate thread

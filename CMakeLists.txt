@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 3.9)
 cmake_policy(SET CMP0042 NEW)
 set(CMAKE_CXX_STANDARD 17)
 
-message(STATUS "CMAKE_JS_INC: ${CMAKE_JS_INC}")
+
 
 project(ccLib)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/build_support/cmake)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-        message(STATUS "Setting build type to `Debug` as none was specified.")
-        set(CMAKE_BUILD_TYPE "Debug")
+  message(STATUS "Setting build type to `Debug` as none was specified.")
+  set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 find_package(ALSA REQUIRED)
@@ -32,11 +32,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-parameter -Wno-attributes")
 
 include_directories(${CMAKE_JS_INC})
-include_directories(ccSrc/lib/include ccSrc/jsInterface/include)
-file(GLOB SOURCE_FILES "ccSrc/lib/src/*.cc" "ccSrc/jsInterface/src/*.cc")
+include_directories(ccSrc/lib/include ccSrc/generated/include)
+file(GLOB SOURCE_FILES "ccSrc/lib/src/*.cc" "ccSrc/jsInterface/*.cc" "ccSrc/generated/src/*.cc")
+
+
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES} ${CMAKE_JS_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(${PROJECT_NAME} ${CMAKE_JS_LIB})
+
 
 execute_process(
     COMMAND node -p "require('node-addon-api').include"
@@ -45,6 +48,7 @@ execute_process(
 )
 
 string(REGEX REPLACE "[\r\n\"]" "" NODE_ADDON_API_DIR ${NODE_ADDON_API_DIR})
+
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${NODE_ADDON_API_DIR})
 
@@ -65,3 +69,21 @@ target_link_libraries(
 )
 
 add_definitions(-DNAPI_VERSION=8)
+
+#
+# Start: WrapperGen
+#
+
+if(RUN_WRAPPERGEN STREQUAL "run")
+
+  get_property(includes DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+  set(includes ${includes} ${NODE_ADDON_API_DIR})
+
+  file(GLOB toGen "ccSrc/lib/include/*.hh")
+
+  execute_process(
+    COMMAND npm run wgen "--" "--include-dir" ${includes} "--source-file" ${toGen} "--config-file" ${CMAKE_SOURCE_DIR}/wrapperGen.hjson "--working-dir" ${CMAKE_SOURCE_DIR}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  )
+
+endif()

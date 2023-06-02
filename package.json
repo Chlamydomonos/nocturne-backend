@@ -6,10 +6,12 @@
   "scripts": {
     "cmkjs": "cmake-js",
     "configure": "cmake-js configure",
-    "build": "cmake-js build && tsc --build",
+    "wgen": "wrappergen",
+    "buildall": "cmake-js configure -- -DRUN_WRAPPERGEN=run && cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build",
+    "build": "cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build",
     "buildjs": "tsc --build",
     "clean": "cmake-js clean",
-    "testwgen": "wrappergen-test"
+    "genwrapper": "cmake-js configure -- -DRUN_WRAPPERGEN=run"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +20,7 @@
   },
   "devDependencies": {
     "@nocturne/wrappergen": "file:../wrapperGen",
+    "@types/node": "^20.2.5",
     "cmake-js": "^7.2.1",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"

@@ -30,7 +30,7 @@ private:
     std::fstream file;
 
 public:
-    WAVDecoder(std::string fileName);
+    WAVDecoder(String fileName);
     ConstRef<Metadata> getMetadata() override;
     Ref<Buffer> getData(i32 size) override;
 };

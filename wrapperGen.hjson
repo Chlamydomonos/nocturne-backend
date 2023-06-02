@@ -1,0 +1,15 @@
+{
+    tsImportSentence: '''
+    import * as path from 'path';
+    const ccLibPath = path.resolve(__dirname, '../../build/Release/ccLib.node');
+    const ccLib = require(ccLibPath);
+    '''
+    ccIncludeOutputPath: ./ccSrc/generated/include
+    ccSrcOutputPath: ./ccSrc/generated/src
+    tsOutputPath: ./src/generated
+    classes: {
+        ALSA: ALSA.hh
+        FFDecoder: FFDecoder.hh
+        WAVDecoder: WAVDecoder.hh
+    }
+}

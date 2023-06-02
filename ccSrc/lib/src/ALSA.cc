@@ -12,7 +12,7 @@ static void checkSnd(int rc, const char *msg)
     }
 }
 
-ALSA::ALSA(Provider &provider, int frames)
+ALSA::ALSA(Provider &provider, u32 frames)
     : provider{provider}, metadata{provider.getMetadata()}, frames{frames}
 {
 
@@ -56,7 +56,7 @@ ALSA::ALSA(Provider &provider, int frames)
 
     fprintf(stderr, "playing this %d Hz %d channels %d bits_per_sample audio\n",
             sample_rate, metadata.channels, metadata.bits_per_sample);
-    fprintf(stderr, "period size is %lu\n", frames);
+    fprintf(stderr, "period size is %u\n", frames);
 }
 
 ALSA::~ALSA()
