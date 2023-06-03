@@ -5,13 +5,14 @@
   "main": "dist/index.js",
   "scripts": {
     "cmkjs": "cmake-js",
-    "configure": "cmake-js configure",
+    "configure": "cmake-js configure --debug",
     "wgen": "wrappergen",
-    "buildall": "cmake-js configure -- -DRUN_WRAPPERGEN=run && cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build",
-    "build": "cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build",
+    "buildall": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=run && cmake-js configure --debug -- -DRUN_WRAPPERGEN=qwe && cmake-js build --debug && tsc --build",
+    "build": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=qwe && cmake-js build --debug && tsc --build",
     "buildjs": "tsc --build",
     "clean": "cmake-js clean",
-    "genwrapper": "cmake-js configure -- -DRUN_WRAPPERGEN=run"
+    "genwrapper": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=run",
+    "releasebuild": "cmake-js configure -- -DRUN_WRAPPERGEN=run && cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build"
   },
   "author": "",
   "license": "ISC",

@@ -30,7 +30,8 @@ private:
     bool playInterleave();
 
     snd_pcm_t *handle;
-    snd_pcm_hw_params_t *params;
+    snd_pcm_hw_params_t *hwParams;
+    snd_pcm_sw_params_t *swParams;
     snd_mixer_t *mixer;
 
     snd_pcm_uframes_t frames;

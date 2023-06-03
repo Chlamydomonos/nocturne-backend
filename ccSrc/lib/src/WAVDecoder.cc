@@ -99,6 +99,7 @@ WAVDecoder::WAVDecoder(std::string filename) : Decoder(filename)
         throw std::runtime_error("Failed to read WAV header");
     }
     wavChecker(header);
+    metadata.format = SND_PCM_FORMAT_S16_LE;
     metadata.sample_rate = header.sample_rate;
     metadata.channels = header.channels;
     metadata.bits_per_sample = header.bits_per_sample;
@@ -112,8 +113,7 @@ const Metadata &WAVDecoder::getMetadata()
 
 Buffer &WAVDecoder::getData(int size)
 {
-    buffer.clear();
-    buffer.assign(size, 0);
+    buffer.resize(size);
     file.read(buffer.data(), size);
     buffer.resize(file.gcount());
     return buffer;

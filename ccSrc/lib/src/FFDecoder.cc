@@ -242,52 +242,49 @@ extern "C"
 
     void FFDecoder::handleBuffer(int size)
     {
-        buffer.clear();
-        buffer.assign(size, 0);
-        int bufferIndex = 0;
+        buffer.resize(size);
 
-        while (bufferIndex < size && !tempBuffer.empty())
-        {
-            buffer[bufferIndex] = tempBuffer.front();
-            tempBuffer.pop_front();
-            bufferIndex++;
-        }
+        char *bufferHead = buffer.data();
 
-        if (bufferIndex == size)
+        if (queue.size() >= size)
         {
+            queue.pop(bufferHead, size);
             return;
         }
 
-        size -= bufferIndex;
-
-        for (;;)
+        if (queue.size() > 0)
         {
-            char *data = nullptr;
-            int dataSize = 0;
-            unsigned long _frames = 0;
+            int tempSize = queue.size();
+            size -= tempSize;
+            queue.pop(bufferHead, queue.size());
+            bufferHead += tempSize;
+        }
 
-            if (!handleData(&data, &dataSize, &_frames))
+        while (size > 0)
+        {
+            char *tempBuffer;
+            int tempSize;
+            unsigned long _tempFrames;
+            if (!handleData(&tempBuffer, &tempSize, &_tempFrames))
             {
                 break;
             }
 
-            if (dataSize + bufferIndex <= size)
+            if (tempSize < size)
             {
-                std::copy(data, data + dataSize, buffer.begin() + bufferIndex);
-                bufferIndex += dataSize;
-                if (dataSize + bufferIndex == size)
-                {
-                    break;
-                }
+                std::copy(tempBuffer, tempBuffer + tempSize, bufferHead);
+                bufferHead += tempSize;
+                size -= tempSize;
                 continue;
             }
 
-            int bytesToCopy = size - bufferIndex;
-            std::copy(data, data + bytesToCopy, buffer.begin() + bufferIndex);
-            for (int i = bytesToCopy; i < dataSize; i++)
+            std::copy(tempBuffer, tempBuffer + size, bufferHead);
+
+            if (tempSize > size)
             {
-                tempBuffer.push_back(data[i]);
+                queue.push(tempBuffer + size, tempSize - size);
             }
+
             break;
         }
     }
@@ -310,8 +307,7 @@ extern "C"
 
         *size = bytesPerSample * frames * metadata.channels;
 
-        tempPlanarBuffer.clear();
-        tempPlanarBuffer.assign(*size, 0);
+        tempPlanarBuffer.resize(*size);
         *buffer = tempPlanarBuffer.data();
 
         for (int i = 0; i < frames; i++)

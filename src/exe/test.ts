@@ -2,15 +2,13 @@
 
 import { ALSA, FFDecoder } from '../generated';
 
-console.log(process.argv);
-
 const decoder = new FFDecoder(process.argv[2]);
 
-const alsa = new ALSA(decoder);
-
-console.log(alsa);
+const alsa = new ALSA(decoder, 768 * 6);
 
 alsa.startPlay();
-alsa.setVolume(10000);
 
-setTimeout(() => console.log('test'), 10000);
+setInterval(() => {
+    let _alsa = alsa;
+    let _decoder = decoder;
+}, 1000);

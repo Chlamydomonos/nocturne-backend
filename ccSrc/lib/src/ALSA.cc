@@ -20,31 +20,41 @@ ALSA::ALSA(Provider &provider, u32 frames)
     CK_SND(snd_pcm_open, (&handle, "default", SND_PCM_STREAM_PLAYBACK, 0));
 
     /* Allocate a hardware parameters object. */
-    CK_SND(snd_pcm_hw_params_malloc, (&params));
+    CK_SND(snd_pcm_hw_params_malloc, (&hwParams));
 
     /* Fill it in with default values. */
-    CK_SND(snd_pcm_hw_params_any, (handle, params));
+    CK_SND(snd_pcm_hw_params_any, (handle, hwParams));
 
     /* Set the desired hardware parameters. */
 
     /* access mode */
 
-    CK_SND(snd_pcm_hw_params_set_access, (handle, params, SND_PCM_ACCESS_RW_INTERLEAVED));
+    CK_SND(snd_pcm_hw_params_set_access, (handle, hwParams, SND_PCM_ACCESS_RW_INTERLEAVED));
 
     /* set bits_per_sample */
 
-    CK_SND(snd_pcm_hw_params_set_format, (handle, params, metadata.format));
+    CK_SND(snd_pcm_hw_params_set_format, (handle, hwParams, metadata.format));
 
     /* set sample rate */
     unsigned int sample_rate = metadata.sample_rate;
 
-    CK_SND(snd_pcm_hw_params_set_rate_near, (handle, params, &sample_rate, &dir));
+    CK_SND(snd_pcm_hw_params_set_rate_near, (handle, hwParams, &sample_rate, &dir));
 
     /* set channels */
-    CK_SND(snd_pcm_hw_params_set_channels, (handle, params, metadata.channels));
+    CK_SND(snd_pcm_hw_params_set_channels, (handle, hwParams, metadata.channels));
 
     /* Write the parameters to the driver */
-    CK_SND(snd_pcm_hw_params, (handle, params));
+    CK_SND(snd_pcm_hw_params, (handle, hwParams));
+
+    CK_SND(snd_pcm_sw_params_malloc, (&swParams));
+
+    CK_SND(snd_pcm_sw_params_current, (handle, swParams));
+
+    CK_SND(snd_pcm_sw_params_set_avail_min, (handle, swParams, frames));
+
+    CK_SND(snd_pcm_sw_params_set_start_threshold, (handle, swParams, 0));
+
+    CK_SND(snd_pcm_sw_params, (handle, swParams));
 
     size = frames * metadata.channels * metadata.bits_per_sample / 8;
 
@@ -54,9 +64,8 @@ ALSA::ALSA(Provider &provider, u32 frames)
     snd_mixer_selem_register(mixer, NULL, NULL);
     snd_mixer_load(mixer);
 
-    fprintf(stderr, "playing this %d Hz %d channels %d bits_per_sample audio\n",
-            sample_rate, metadata.channels, metadata.bits_per_sample);
-    fprintf(stderr, "period size is %u\n", frames);
+    printf("Playing this %d Hz %d channels %d bits_per_sample audio\n", sample_rate, metadata.channels, metadata.bits_per_sample);
+    printf("Period size is %u\n", frames);
 }
 
 ALSA::~ALSA()
@@ -76,6 +85,7 @@ void ALSA::startPlay()
     {
         throw std::runtime_error("already playing");
     }
+    control = PLAY;
     playThread = std::make_unique<std::thread>(&ALSA::play, this);
 }
 
@@ -94,11 +104,40 @@ void ALSA::play()
 
 bool ALSA::playInterleave()
 {
-    auto buffer = provider.getData(size);
-    if (buffer.size() == 0)
+    int error;
+    if ((error = snd_pcm_wait(handle, 1000)) < 0)
     {
+        fprintf(stderr, "Poll failed: %s\n", snd_strerror(error));
         return false;
     }
+
+    int framesToDeliver;
+    if ((framesToDeliver = snd_pcm_avail_update(handle)) < 0)
+    {
+        if (framesToDeliver == -EPIPE)
+        {
+            fprintf(stderr, "XRun occurred\n");
+            return false;
+        }
+        else
+        {
+            fprintf(stderr, "Get available space failed: %d", framesToDeliver);
+            return false;
+        }
+    }
+
+    if (framesToDeliver < frames)
+    {
+        return true;
+    }
+
+    auto buffer = provider.getData(size);
+    if (buffer.size() < size)
+    {
+        printf("End of file, buffer size: %d\n", buffer.size());
+        return false;
+    }
+
     int flag = 0;
     if ((flag = snd_pcm_writei(handle, buffer.data(), frames)) == -EPIPE)
     {

@@ -3,8 +3,7 @@
 #include "nocturne_types.hh"
 
 #include "Decoder.hh"
-
-#include <deque>
+#include "Queue.hh"
 
 extern "C"
 {
@@ -18,7 +17,7 @@ class FFDecoder : public Decoder
 {
 private:
     Metadata metadata{};
-    std::deque<char> tempBuffer{};
+    Queue queue{65536};
     Buffer buffer{};
     Buffer tempPlanarBuffer{};
 
