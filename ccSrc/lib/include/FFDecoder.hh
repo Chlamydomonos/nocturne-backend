@@ -47,6 +47,8 @@ private:
 public:
     FFDecoder(String fileName);
     ~FFDecoder();
-    ConstRef<Metadata> getMetadata() override;
+    Ref<Metadata> getMetadata() override;
     Ref<Buffer> getData(i32 size) override;
+    i32 getCurrentFrame() override;
+    void setCurrentFrame(i32 currentFrame) override;
 };

@@ -28,9 +28,14 @@ private:
     Buffer buffer{};
     WAVHeader header{};
     std::fstream file;
+    int bytesPerFrame;
+    int currentByte{0};
+    int startByte;
 
 public:
     WAVDecoder(String fileName);
-    ConstRef<Metadata> getMetadata() override;
+    Ref<Metadata> getMetadata() override;
     Ref<Buffer> getData(i32 size) override;
+    i32 getCurrentFrame() override;
+    void setCurrentFrame(i32 currentFrame) override;
 };

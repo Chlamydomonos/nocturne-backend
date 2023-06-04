@@ -131,6 +131,11 @@ bool ALSA::playInterleave()
         return true;
     }
 
+    {
+        std::scoped_lock<std::mutex> lock(mutex);
+        snd_pcm_delay(handle, &currentFrame);
+    }
+
     auto buffer = provider.getData(size);
     if (buffer.size() < size)
     {
@@ -203,4 +208,17 @@ void ALSA::setVolume(int volume)
     long max = 512, vol;
     vol = (long)(max * volume / 100.0f); // volume is a float between 0 and 1
     snd_mixer_selem_set_playback_volume_all(elem, vol);
+}
+
+i32 ALSA::getCurrentFrame()
+{
+    std::scoped_lock<std::mutex> lock(mutex);
+    return currentFrame;
+}
+
+void ALSA::refreshBuffer()
+{
+    std::scoped_lock<std::mutex> lock(mutex);
+    snd_pcm_drop(handle);
+    snd_pcm_prepare(handle);
 }

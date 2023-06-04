@@ -103,10 +103,11 @@ WAVDecoder::WAVDecoder(std::string filename) : Decoder(filename)
     metadata.sample_rate = header.sample_rate;
     metadata.channels = header.channels;
     metadata.bits_per_sample = header.bits_per_sample;
-    seekDataSection(file);
+    startByte = seekDataSection(file);
+    bytesPerFrame = header.bits_per_sample * header.channels / 8;
 }
 
-const Metadata &WAVDecoder::getMetadata()
+Metadata &WAVDecoder::getMetadata()
 {
     return metadata;
 }
@@ -116,5 +117,17 @@ Buffer &WAVDecoder::getData(int size)
     buffer.resize(size);
     file.read(buffer.data(), size);
     buffer.resize(file.gcount());
+    currentByte += buffer.size();
     return buffer;
+}
+
+int WAVDecoder::getCurrentFrame()
+{
+    return currentByte / bytesPerFrame;
+}
+
+void WAVDecoder::setCurrentFrame(int currentFrame)
+{
+    currentByte = currentFrame * bytesPerFrame + startByte;
+    file.seekg(currentByte);
 }

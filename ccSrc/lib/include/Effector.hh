@@ -9,5 +9,5 @@ protected:
     Effector(Provider *parent) : parent(parent) {}
 
 public:
-    virtual ConstRef<Metadata> getMetadata() override { return parent->getMetadata(); }
+    virtual Ref<Metadata> getMetadata() override { return parent->getMetadata(); }
 };

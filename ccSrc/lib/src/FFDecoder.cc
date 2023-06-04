@@ -323,7 +323,7 @@ extern "C"
         return true;
     }
 
-    const Metadata &FFDecoder::getMetadata()
+    Metadata &FFDecoder::getMetadata()
     {
         return metadata;
     }
@@ -332,5 +332,14 @@ extern "C"
     {
         handleBuffer(size);
         return buffer;
+    }
+
+    int FFDecoder::getCurrentFrame()
+    {
+        return 0;
+    }
+
+    void FFDecoder::setCurrentFrame(int currentFrame)
+    {
     }
 }

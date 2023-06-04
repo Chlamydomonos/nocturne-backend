@@ -26,6 +26,9 @@ public:
     void pause();
     void setVolume(i32 volume);
 
+    i32 getCurrentFrame();
+    void refreshBuffer();
+
 private:
     bool playInterleave();
 
@@ -49,4 +52,6 @@ private:
     } control;
     std::mutex mutex;
     std::condition_variable cv;
+
+    long currentFrame;
 };

@@ -18,7 +18,4 @@ template <typename T>
 using Ref = T &;
 
 template <typename T>
-using ConstRef = const T &;
-
-template <typename T>
 using HasDefault = T;

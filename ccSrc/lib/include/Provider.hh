@@ -11,6 +11,8 @@ using Buffer = std::vector<char>;
 class Provider
 {
 public:
-    virtual ConstRef<Metadata> getMetadata() = 0;
+    virtual Ref<Metadata> getMetadata() = 0;
     virtual Ref<Buffer> getData(i32 size) = 0;
+    virtual int getCurrentFrame() = 0;
+    virtual void setCurrentFrame(int currentFrame) = 0;
 };
