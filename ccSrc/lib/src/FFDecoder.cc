@@ -101,6 +101,7 @@ extern "C"
             avcodec_parameters_free(&codecParameters);
         }
         codecParameters = formatContext->streams[audioStreamIndex]->codecpar;
+        totalFrames = formatContext->streams[audioStreamIndex]->nb_frames;
 
         codec = avcodec_find_decoder(
             formatContext->streams[audioStreamIndex]->codecpar->codec_id);

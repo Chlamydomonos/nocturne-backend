@@ -26,6 +26,9 @@ public:
     void pause();
     void setVolume(i32 volume);
 
+    void stop();
+    boolean hasStopped() { return control == STOP; }
+
     i32 getCurrentFrame();
     void refreshBuffer();
 
@@ -48,8 +51,9 @@ private:
     enum
     {
         PLAY,
-        PAUSE
-    } control;
+        PAUSE,
+        STOP
+    } control{PLAY};
     std::mutex mutex;
     std::condition_variable cv;
 

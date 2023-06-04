@@ -94,12 +94,20 @@ void ALSA::play()
     do
     {
         std::unique_lock<std::mutex> lock(mutex);
+        if (control == STOP)
+            break;
+
         if (control == PAUSE)
             cv.wait(lock, [this]
                     { return control == PLAY; });
         else
             lock.unlock();
     } while (playInterleave());
+
+    {
+        std::scoped_lock<std::mutex> lock(mutex);
+        control = STOP;
+    }
 }
 
 bool ALSA::playInterleave()
@@ -221,4 +229,18 @@ void ALSA::refreshBuffer()
     std::scoped_lock<std::mutex> lock(mutex);
     snd_pcm_drop(handle);
     snd_pcm_prepare(handle);
+}
+
+void ALSA::stop()
+{
+    {
+        std::scoped_lock<std::mutex> lock(mutex);
+        control = STOP;
+    }
+    if (playThread)
+    {
+        playThread->join();
+        playThread = nullptr;
+        snd_pcm_drop(handle);
+    }
 }

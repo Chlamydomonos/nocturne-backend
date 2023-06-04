@@ -13,4 +13,5 @@ protected:
 public:
     virtual i32 getCurrentFrame() = 0;
     virtual void setCurrentFrame(i32 currentFrame) = 0;
+    virtual i32 getTotalFrames() = 0;
 };

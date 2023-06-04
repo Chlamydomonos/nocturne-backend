@@ -13,6 +13,7 @@ using f64 = double;
 using String = std::string;
 using ConstString = const std::string &;
 using CString = const char *;
+using boolean = bool;
 
 template <typename T>
 using Ref = T &;

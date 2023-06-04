@@ -105,6 +105,11 @@ WAVDecoder::WAVDecoder(std::string filename) : Decoder(filename)
     metadata.bits_per_sample = header.bits_per_sample;
     startByte = seekDataSection(file);
     bytesPerFrame = header.bits_per_sample * header.channels / 8;
+
+    file.seekg(0, std::ios::end);
+    int fileSize = file.tellg();
+    totalFrames = (fileSize - startByte) / bytesPerFrame;
+    file.seekg(startByte);
 }
 
 Metadata &WAVDecoder::getMetadata()

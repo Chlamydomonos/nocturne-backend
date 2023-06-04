@@ -14,11 +14,9 @@ Ref<Buffer> SpeedEffector::getData(i32 size)
     }
 
     buffer.resize(size);
-    int neededSections = (size * speedPercent / 100) / SECTION_SIZE;
-    int neededSize = neededSections * SECTION_SIZE;
+    int neededFrames = (size * speedPercent / 100) / BIG_FRAME_SIZE;
+    int neededSize = neededFrames * BIG_FRAME_SIZE;
     int bytesInSection = static_cast<int>(100.0 / speedPercent * SECTION_FRAME_COUNT) * BIG_FRAME_SIZE;
-
-    printf("size: %d, neededSections: %d, neededSize: %d, bytesInSection: %d\n", size, neededSections, neededSize, bytesInSection);
 
     Buffer &parentBuffer = parent.getData(neededSize);
 
@@ -48,4 +46,11 @@ Ref<Buffer> SpeedEffector::getData(i32 size)
     }
 
     return buffer;
+}
+
+double SpeedEffector::getRealSpeed(int size) const
+{
+    int neededFrames = (size * speedPercent / 100) / BIG_FRAME_SIZE;
+    int neededSize = neededFrames * BIG_FRAME_SIZE;
+    return static_cast<double>(size) / neededSize;
 }

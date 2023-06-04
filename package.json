@@ -17,11 +17,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-addon-api": "^6.1.0"
+    "node-addon-api": "^6.1.0",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.32.0",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "@nocturne/wrappergen": "file:../wrapperGen",
     "@types/node": "^20.2.5",
+    "@types/sequelize": "^4.28.15",
+    "@types/validator": "^13.7.17",
     "cmake-js": "^7.2.1",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"

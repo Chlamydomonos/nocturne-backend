@@ -46,12 +46,14 @@ private:
 
     int currentByte{0};
     int bytesPerFrame;
+    int totalFrames;
 
 public:
     FFDecoder(String fileName);
-    ~FFDecoder();
+    virtual ~FFDecoder();
     Ref<Metadata> getMetadata() override;
     Ref<Buffer> getData(i32 size) override;
     i32 getCurrentFrame() override;
     void setCurrentFrame(i32 currentFrame) override;
+    i32 getTotalFrames() override { return totalFrames; }
 };

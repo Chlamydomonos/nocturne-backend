@@ -31,6 +31,7 @@ private:
     int bytesPerFrame;
     int currentByte{0};
     int startByte;
+    int totalFrames;
 
 public:
     WAVDecoder(String fileName);
@@ -38,4 +39,5 @@ public:
     Ref<Buffer> getData(i32 size) override;
     i32 getCurrentFrame() override;
     void setCurrentFrame(i32 currentFrame) override;
+    i32 getTotalFrames() override { return totalFrames; }
 };

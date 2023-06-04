@@ -12,18 +12,39 @@ const alsa = new ALSA(speedEffector, 7680);
 
 alsa.startPlay();
 
-setInterval(() => {
+const intervalId = setInterval(() => {
     const persist = {
         alsa,
         decoder,
         speedEffector,
     };
+
+    if (persist.alsa.hasStopped()) {
+        clearInterval(intervalId);
+        process.exit(0);
+    }
 }, 1000);
 
+/*
 setTimeout(() => {
-    speedEffector.setSpeedPercent(200);
+    speedEffector.setSpeedPercent(147);
     const alsaFrames = alsa.getCurrentFrame();
     const decoderFrames = decoder.getCurrentFrame();
     decoder.setCurrentFrame(decoderFrames - alsaFrames);
     alsa.refreshBuffer();
 }, 5000);
+*/
+
+/*
+setTimeout(() => {
+    alsa.stop();
+}, 5000);
+*/
+
+setTimeout(() => {
+    alsa.pause();
+}, 5000);
+
+setTimeout(() => {
+    alsa.resume();
+}, 10000);
