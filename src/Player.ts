@@ -3,7 +3,7 @@ import { ALSA, FFDecoder, SpeedEffector } from './generated';
 import { getSampleRate } from './CCLibWrapper';
 import { IgnoreNocturne } from './reflect';
 
-enum PlayStatus {
+export enum PlayStatus {
     STOP = 0,
     PLAY = 1,
     PAUSE = 2,
