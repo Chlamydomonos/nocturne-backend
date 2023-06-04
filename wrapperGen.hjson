@@ -15,5 +15,6 @@
         ALSA: ALSA.hh
         FFDecoder: FFDecoder.hh
         WAVDecoder: WAVDecoder.hh
+        SpeedEffector: SpeedEffector.hh
     }
 }

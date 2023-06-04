@@ -133,6 +133,7 @@ extern "C"
         metadata.format = getFormat(codecContext->sample_fmt);
         metadata.accessMethod = getAccessMethod(codecContext);
         metadata.nb_samples = codecContext->frame_size;
+        bytesPerFrame = metadata.bits_per_sample * metadata.channels / 8;
 
         if (avcodec_open2(codecContext, codec, nullptr) < 0)
         {
@@ -331,15 +332,17 @@ extern "C"
     Buffer &FFDecoder::getData(int size)
     {
         handleBuffer(size);
+        currentByte += buffer.size();
         return buffer;
     }
 
     int FFDecoder::getCurrentFrame()
     {
-        return 0;
+        return currentByte / bytesPerFrame;
     }
 
     void FFDecoder::setCurrentFrame(int currentFrame)
     {
+        av_seek_frame(formatContext, audioStreamIndex, currentFrame, AVSEEK_FLAG_FRAME);
     }
 }

@@ -8,7 +8,6 @@ static Napi::Value getSampleRate(const Napi::CallbackInfo &info)
     auto env = info.Env();
     auto &arg = info[0];
     auto metadata = PARSE_WRAPPER(arg, Metadata);
-    printf("sample rate: %d\n", metadata->sample_rate);
     return Napi::Number::New(env, metadata->sample_rate);
 }
 

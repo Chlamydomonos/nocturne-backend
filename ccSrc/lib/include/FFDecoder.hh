@@ -44,6 +44,9 @@ private:
     void handleBuffer(int size);
     bool handleData(char **buffer, int *size, unsigned long *frameCount);
 
+    int currentByte{0};
+    int bytesPerFrame;
+
 public:
     FFDecoder(String fileName);
     ~FFDecoder();

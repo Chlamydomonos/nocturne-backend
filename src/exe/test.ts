@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
-import { ALSA, WAVDecoder } from '../generated';
+import { ALSA, FFDecoder, SpeedEffector } from '../generated';
 
 const ccLib = require('../../build/Debug/ccLib.node');
 
-const decoder = new WAVDecoder(process.argv[2]);
+const decoder = new FFDecoder(process.argv[2]);
 
-const alsa = new ALSA(decoder, 768 * 6);
+const speedEffector = new SpeedEffector(decoder);
+
+const alsa = new ALSA(speedEffector, 7680);
 
 alsa.startPlay();
 
@@ -14,19 +16,14 @@ setInterval(() => {
     const persist = {
         alsa,
         decoder,
+        speedEffector,
     };
-    const sampleRate = ccLib.getSampleRate(decoder.getMetadata().value);
-    console.log('Sample rate: ', sampleRate);
 }, 1000);
 
 setTimeout(() => {
-    console.log('Try to play second 2');
-    const alsaFrame = alsa.getCurrentFrame();
-    const decoderFrame = decoder.getCurrentFrame();
-    decoder.setCurrentFrame(88200);
+    speedEffector.setSpeedPercent(200);
+    const alsaFrames = alsa.getCurrentFrame();
+    const decoderFrames = decoder.getCurrentFrame();
+    decoder.setCurrentFrame(decoderFrames - alsaFrames);
     alsa.refreshBuffer();
 }, 5000);
-
-setTimeout(() => {
-    console.log('This is second 2');
-}, 2000);
