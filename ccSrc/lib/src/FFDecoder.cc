@@ -42,16 +42,24 @@ extern "C"
 
     FFDecoder::FFDecoder(std::string fileName) : Decoder(fileName)
     {
+        int errorno;
+        char errorMsg[256] = {0};
         formatContext = avformat_alloc_context();
         if (!formatContext)
         {
             throw std::runtime_error("Cannot allocate format context");
         }
 
-        if (avformat_open_input(&formatContext, fileName.c_str(), nullptr, nullptr) <
-            0)
+        AVIOContext *avio_ctx = NULL;
+        const char *protocol = NULL;
+        while ((protocol = avio_enum_protocols((void**)&avio_ctx, 0)) != NULL) {
+            printf("Protocol: %s\n", protocol);
+        }
+
+        if ((errorno = avformat_open_input(&formatContext, ("file:" + fileName).c_str(), nullptr, nullptr)) < 0)
         {
-            throw std::runtime_error("Cannot open input");
+            av_strerror(errorno, errorMsg, 256);
+            throw std::runtime_error("Cannot open input: " + ("file:" + fileName) + ", " + errorMsg);
         }
 
         if (avformat_find_stream_info(formatContext, nullptr) < 0)

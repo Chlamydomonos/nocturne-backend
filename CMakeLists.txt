@@ -33,6 +33,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-parameter -Wno-a
 
 include_directories(${CMAKE_JS_INC})
 include_directories(ccSrc/lib/include ccSrc/generated/include)
+include_directories(${EXTRA_INCLUDES})
 file(GLOB SOURCE_FILES "ccSrc/lib/src/*.cc" "ccSrc/jsInterface/*.cc" "ccSrc/generated/src/*.cc")
 
 

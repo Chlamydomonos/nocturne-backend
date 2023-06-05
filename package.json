@@ -12,7 +12,8 @@
     "buildjs": "tsc --build",
     "clean": "cmake-js clean",
     "genwrapper": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=run",
-    "releasebuild": "cmake-js configure -- -DRUN_WRAPPERGEN=run && cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build"
+    "releasebuild": "cmake-js configure -- -DRUN_WRAPPERGEN=run && cmake-js configure -- -DRUN_WRAPPERGEN=qwe && cmake-js build && tsc --build",
+    "crossbuild": "cmake-js configure --arch arm --CDCMAKE_TOOLCHAIN_FILE=$CROSS_BUILD_TOOLCHAIN_FILE --CDEXTRA_INCLUDES=$CROSS_BUILD_EXTRA_INCLUDES --CDRUN_WRAPPERGEN=qwe && cmake-js compile --arch arm --CDCMAKE_TOOLCHAIN_FILE=$CROSS_BUILD_TOOLCHAIN_FILE --CDEXTRA_INCLUDES=$CROSS_BUILD_EXTRA_INCLUDES && tsc --build"
   },
   "author": "",
   "license": "ISC",

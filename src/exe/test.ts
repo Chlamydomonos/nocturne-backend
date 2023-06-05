@@ -2,8 +2,6 @@
 
 import { ALSA, FFDecoder, SpeedEffector } from '../generated';
 
-const ccLib = require('../../build/Debug/ccLib.node');
-
 const decoder = new FFDecoder(process.argv[2]);
 
 const speedEffector = new SpeedEffector(decoder);
