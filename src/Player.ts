@@ -113,9 +113,8 @@ export class Player {
         if (!this.alsa) {
             return 1;
         }
-        const speedPercent = this.speedEffector!.getSpeedPercent();
+        this.setTime(this.getTime());
         this.speedEffector!.setSpeedPercent(speed * 100);
-        this.setTime(this.getTime(speedPercent, true));
         return 0;
     }
 
@@ -139,17 +138,14 @@ export class Player {
         return 0;
     }
 
-    getTime(speedPercent?: number, speedChanged?: true) {
+    getTime() {
         if (!this.alsa) {
             return -1;
         }
         const decoderFrames = this.decoder!.getCurrentFrame();
         const alsaFrames = this.alsa.getCurrentFrame();
 
-        const actualSpeedPercent = speedChanged ? speedPercent! : this.speedEffector!.getSpeedPercent();
-
-        const realSpeed = this.speedEffector!.getRealSpeed(this.size, actualSpeedPercent);
-        console.log("realSpeed:", realSpeed);
+        const realSpeed = this.speedEffector!.getRealSpeed(this.size);
         const realAlsaFrames = alsaFrames / realSpeed;
         return this.frameToTime(decoderFrames - realAlsaFrames);
     }
@@ -159,7 +155,6 @@ export class Player {
             return -1;
         }
         const frame = this.decoder!.getTotalFrames();
-        console.log("frame:", frame);
         return Math.floor(this.frameToTime(frame));
     }
 }

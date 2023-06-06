@@ -48,7 +48,7 @@ Ref<Buffer> SpeedEffector::getData(i32 size)
     return buffer;
 }
 
-double SpeedEffector::getRealSpeed(int size, int speedPercent) const
+double SpeedEffector::getRealSpeed(int size) const
 {
     int neededFrames = (size * speedPercent / 100) / BIG_FRAME_SIZE;
     int neededSize = neededFrames * BIG_FRAME_SIZE;

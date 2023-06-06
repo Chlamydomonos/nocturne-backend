@@ -63,9 +63,6 @@ ALSA::ALSA(Provider &provider, u32 frames)
     snd_mixer_attach(mixer, "default");
     snd_mixer_selem_register(mixer, NULL, NULL);
     snd_mixer_load(mixer);
-
-    printf("Playing this %d Hz %d channels %d bits_per_sample audio\n", sample_rate, metadata.channels, metadata.bits_per_sample);
-    printf("Period size is %u\n", frames);
 }
 
 ALSA::~ALSA()
