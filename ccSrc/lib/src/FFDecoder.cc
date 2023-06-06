@@ -131,6 +131,8 @@ extern "C"
             throw std::runtime_error("Cannot copy codec params to codec context");
         }
 
+        codecContext->pkt_timebase = formatContext->streams[audioStreamIndex]->time_base;
+
         // fill ALSA
         metadata.bits_per_sample =
             8 * av_get_bytes_per_sample(codecContext->sample_fmt);
@@ -163,6 +165,7 @@ extern "C"
             case AVERROR_EOF:
                 if (!nextStream())
                 {
+                    printf("precedePacket: End of file\n");
                     return false;
                 }
                 continue;
@@ -195,10 +198,13 @@ extern "C"
         ret = avcodec_receive_frame(codecContext, frame);
         if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
         {
+            printf("temp1\n");
             if (!precedePacket())
             {
+                printf("temp3\n");
                 return false;
             }
+            printf("temp2\n");
             goto start;
         }
         else if (ret < 0)
@@ -249,15 +255,14 @@ extern "C"
 
     void FFDecoder::handleBuffer(int size)
     {
-        printf("FFDecoder: before buffer resize\n");
+
         buffer.resize(size);
-        printf("FFDecoder: after buffer resize\n");
+
 
         char *bufferHead = buffer.data();
 
         if (queue.size() >= size)
         {
-            printf("FFDecoder: queue pop\n");
             queue.pop(bufferHead, size);
             return;
         }
@@ -266,7 +271,7 @@ extern "C"
         {
             int tempSize = queue.size();
             size -= tempSize;
-            printf("FFDecoder: queue pop all\n");
+
             queue.pop(bufferHead, queue.size());
             bufferHead += tempSize;
         }
@@ -276,13 +281,11 @@ extern "C"
             char *tempBuffer;
             int tempSize;
             unsigned long _tempFrames;
-            printf("FFDecoder: try handle data\n");
+
             if (!handleData(&tempBuffer, &tempSize, &_tempFrames))
             {
-                printf("FFDecoder: handle data failed\n");
                 break;
             }
-            printf("FFDecoder: handle data success\n");
 
             if (tempSize < size)
             {
@@ -321,9 +324,7 @@ extern "C"
 
         *size = bytesPerSample * frames * metadata.channels;
 
-        printf("FFdecoder: before tempPlanarBuffer.resize\n");
         tempPlanarBuffer.resize(*size);
-        printf("FFdecoder: after tempPlanarBuffer.resize\n");
         *buffer = tempPlanarBuffer.data();
 
         for (int i = 0; i < frames; i++)
@@ -346,6 +347,7 @@ extern "C"
 
     Buffer &FFDecoder::getData(int size)
     {
+        std::scoped_lock<std::mutex> lock(mutex);
         handleBuffer(size);
         currentByte += buffer.size();
         return buffer;
@@ -358,6 +360,11 @@ extern "C"
 
     void FFDecoder::setCurrentFrame(int currentFrame)
     {
-        av_seek_frame(formatContext, audioStreamIndex, currentFrame, AVSEEK_FLAG_FRAME);
+        std::scoped_lock<std::mutex> lock(mutex);
+        currentByte = currentFrame * bytesPerFrame;
+        auto timeInMicroseconds = currentFrame * 1000000 / metadata.sample_rate;
+        auto timeStamp = timeInMicroseconds;
+        printf("seeking to %d\n", timeStamp);
+        av_seek_frame(formatContext, audioStreamIndex, 0,  AVSEEK_FLAG_ANY);
     }
 }

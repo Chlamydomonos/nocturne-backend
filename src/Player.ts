@@ -114,6 +114,7 @@ export class Player {
             return 1;
         }
         this.setTime(this.getTime());
+        console.log("Try set speed");
         this.speedEffector!.setSpeedPercent(speed * 100);
         return 0;
     }

@@ -8,14 +8,16 @@
 
 Ref<Buffer> SpeedEffector::getData(i32 size)
 {
+    std::scoped_lock lock(mutex);
+
     if (size < SECTION_SIZE)
     {
         throw std::runtime_error("SpeedEffector::getData: size too small, must be greater than " + std::to_string(SECTION_SIZE));
     }
 
-    printf("SpeedEffector: before buffer resize\n");
+
     buffer.resize(size);
-    printf("SpeedEffector: after buffer resize\n");
+
     int neededFrames = (size * speedPercent / 100) / BIG_FRAME_SIZE;
     int neededSize = neededFrames * BIG_FRAME_SIZE;
     int bytesInSection = static_cast<int>(100.0 / speedPercent * SECTION_FRAME_COUNT) * BIG_FRAME_SIZE;

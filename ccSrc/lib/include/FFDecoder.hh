@@ -5,6 +5,8 @@
 #include "Decoder.hh"
 #include "Queue.hh"
 
+#include <mutex>
+
 extern "C"
 {
 #include <libavcodec/avcodec.h>
@@ -48,6 +50,7 @@ private:
     int bytesPerFrame;
     int totalFrames;
 
+    std::mutex mutex{};
 public:
     FFDecoder(String fileName);
     virtual ~FFDecoder();

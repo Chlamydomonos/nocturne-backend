@@ -1,16 +1,52 @@
 #!/usr/bin/env node
 
-import { Player } from "../Player";
+import { ALSA, FFDecoder, SpeedEffector } from '../generated';
 
-const player = new Player();
+const decoder = new FFDecoder(process.argv[2]);
 
-player.play(process.argv[2]);
+const speedEffector = new SpeedEffector(decoder);
 
-setInterval(() => {
-    console.log("time:", player.getTime());
+const alsa = new ALSA(speedEffector, 7680);
+
+alsa.startPlay();
+
+const intervalId = setInterval(() => {
+    const persist = {
+        alsa,
+        decoder,
+        speedEffector,
+    };
+
+    if (persist.alsa.hasStopped()) {
+        clearInterval(intervalId);
+        process.exit(0);
+    }
 }, 1000);
 
+
 setTimeout(() => {
-    console.log("length:", player.getLength());
-    player.setSpeed(1.5);
+    speedEffector.setSpeedPercent(147);
+    const alsaFrames = alsa.getCurrentFrame();
+    const decoderFrames = decoder.getCurrentFrame();
+    console.log("alsaFrames", alsaFrames);
+    console.log("decoderFrames", decoderFrames);
+    decoder.setCurrentFrame(decoderFrames - alsaFrames);
+    alsa.refreshBuffer();
+}, 1000);
+
+
+/*
+setTimeout(() => {
+    alsa.stop();
 }, 5000);
+*/
+
+/*
+setTimeout(() => {
+    alsa.pause();
+}, 5000);
+
+setTimeout(() => {
+    alsa.resume();
+}, 10000);
+*/
