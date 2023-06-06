@@ -23,7 +23,7 @@ const intervalId = setInterval(() => {
     }
 }, 1000);
 
-/*
+
 setTimeout(() => {
     speedEffector.setSpeedPercent(147);
     const alsaFrames = alsa.getCurrentFrame();
@@ -31,7 +31,7 @@ setTimeout(() => {
     decoder.setCurrentFrame(decoderFrames - alsaFrames);
     alsa.refreshBuffer();
 }, 5000);
-*/
+
 
 /*
 setTimeout(() => {
@@ -39,6 +39,7 @@ setTimeout(() => {
 }, 5000);
 */
 
+/*
 setTimeout(() => {
     alsa.pause();
 }, 5000);
@@ -46,3 +47,4 @@ setTimeout(() => {
 setTimeout(() => {
     alsa.resume();
 }, 10000);
+*/
