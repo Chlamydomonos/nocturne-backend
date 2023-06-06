@@ -50,12 +50,6 @@ extern "C"
             throw std::runtime_error("Cannot allocate format context");
         }
 
-        AVIOContext *avio_ctx = NULL;
-        const char *protocol = NULL;
-        while ((protocol = avio_enum_protocols((void**)&avio_ctx, 0)) != NULL) {
-            printf("Protocol: %s\n", protocol);
-        }
-
         if ((errorno = avformat_open_input(&formatContext, ("file:" + fileName).c_str(), nullptr, nullptr)) < 0)
         {
             av_strerror(errorno, errorMsg, 256);
@@ -109,7 +103,10 @@ extern "C"
             avcodec_parameters_free(&codecParameters);
         }
         codecParameters = formatContext->streams[audioStreamIndex]->codecpar;
-        totalFrames = formatContext->streams[audioStreamIndex]->nb_frames;
+
+        i64 duration = formatContext->streams[audioStreamIndex]->duration;
+        i64 durationInMicroSeconds = av_rescale_q(duration, formatContext->streams[audioStreamIndex]->time_base, AV_TIME_BASE_Q);
+        totalFrames = durationInMicroSeconds * codecParameters->sample_rate / 1000000;
 
         codec = avcodec_find_decoder(
             formatContext->streams[audioStreamIndex]->codecpar->codec_id);
