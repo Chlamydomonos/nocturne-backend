@@ -249,12 +249,15 @@ extern "C"
 
     void FFDecoder::handleBuffer(int size)
     {
+        printf("FFDecoder: before buffer resize\n");
         buffer.resize(size);
+        printf("FFDecoder: after buffer resize\n");
 
         char *bufferHead = buffer.data();
 
         if (queue.size() >= size)
         {
+            printf("FFDecoder: queue pop\n");
             queue.pop(bufferHead, size);
             return;
         }
@@ -263,6 +266,7 @@ extern "C"
         {
             int tempSize = queue.size();
             size -= tempSize;
+            printf("FFDecoder: queue pop all\n");
             queue.pop(bufferHead, queue.size());
             bufferHead += tempSize;
         }
@@ -272,10 +276,13 @@ extern "C"
             char *tempBuffer;
             int tempSize;
             unsigned long _tempFrames;
+            printf("FFDecoder: try handle data\n");
             if (!handleData(&tempBuffer, &tempSize, &_tempFrames))
             {
+                printf("FFDecoder: handle data failed\n");
                 break;
             }
+            printf("FFDecoder: handle data success\n");
 
             if (tempSize < size)
             {
@@ -314,7 +321,9 @@ extern "C"
 
         *size = bytesPerSample * frames * metadata.channels;
 
+        printf("FFdecoder: before tempPlanarBuffer.resize\n");
         tempPlanarBuffer.resize(*size);
+        printf("FFdecoder: after tempPlanarBuffer.resize\n");
         *buffer = tempPlanarBuffer.data();
 
         for (int i = 0; i < frames; i++)
