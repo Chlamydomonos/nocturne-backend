@@ -119,20 +119,41 @@ Metadata &WAVDecoder::getMetadata()
 
 Buffer &WAVDecoder::getData(int size)
 {
+
+    LOCK;
+    currentByte += size;
+
+    if(eof)
+        return buffer;
+
     buffer.resize(size);
-    file.read(buffer.data(), size);
-    buffer.resize(file.gcount());
-    currentByte += buffer.size();
+
+    auto gcount = file.read(buffer.data(), size).gcount();
+
+    if(gcount < size)
+    {
+        eof = true;
+        std::fill(buffer.begin() + gcount, buffer.end(), 0);
+    }
+
     return buffer;
 }
 
 int WAVDecoder::getCurrentFrame()
 {
+    LOCK;
     return currentByte / bytesPerFrame;
 }
 
 void WAVDecoder::setCurrentFrame(int currentFrame)
 {
-    currentByte = currentFrame * bytesPerFrame + startByte;
-    file.seekg(currentByte);
+    LOCK;
+    currentByte = currentFrame * bytesPerFrame;
+    if(eof)
+    {
+        file.close();
+        file.open(fileName.c_str(), std::ios::in | std::ios::binary);
+        eof = false;
+    }
+    file.seekg(currentByte + startByte);
 }

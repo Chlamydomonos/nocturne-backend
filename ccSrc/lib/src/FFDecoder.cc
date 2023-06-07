@@ -274,6 +274,8 @@ extern "C"
             unsigned long _tempFrames;
             if (!handleData(&tempBuffer, &tempSize, &_tempFrames))
             {
+                printf("end of file\n");
+                std::fill(bufferHead, bufferHead + size, 0);
                 break;
             }
 
@@ -337,6 +339,7 @@ extern "C"
 
     Buffer &FFDecoder::getData(int size)
     {
+        LOCK;
         handleBuffer(size);
         currentByte += buffer.size();
         return buffer;
@@ -344,11 +347,14 @@ extern "C"
 
     int FFDecoder::getCurrentFrame()
     {
+        LOCK;
         return currentByte / bytesPerFrame;
     }
 
     void FFDecoder::setCurrentFrame(int currentFrame)
     {
-        av_seek_frame(formatContext, audioStreamIndex, currentFrame, AVSEEK_FLAG_FRAME);
+        LOCK;
+        currentByte = currentFrame * bytesPerFrame;
+        av_seek_frame(formatContext, audioStreamIndex, currentFrame, AVSEEK_FLAG_FRAME | AVSEEK_FLAG_ANY);
     }
 }

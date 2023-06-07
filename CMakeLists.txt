@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 project(ccLib)
 
+if(ADD_ASAN STREQUAL "add")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+  link_libraries(-lasan)
+endif()
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/build_support/cmake)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

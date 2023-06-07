@@ -11,9 +11,9 @@ private:
 public:
     SpeedEffector(Ref<Provider> parent) : Effector(parent) {}
 
-    void setSpeedPercent(i32 speedPercent) { this->speedPercent = speedPercent; }
-    i32 getSpeedPercent() const { return speedPercent; }
-    f64 getRealSpeed(i32 size) const;
+    void setSpeedPercent(i32 speedPercent);
+    i32 getSpeedPercent();
+    f64 getRealSpeed(i32 size);
 
     Ref<Buffer> getData(i32 size) override;
 };

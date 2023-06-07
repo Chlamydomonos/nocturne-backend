@@ -7,10 +7,16 @@ const player = new Player();
 player.play(process.argv[2]);
 
 setInterval(() => {
-    console.log("time:", player.getTime());
+    if(player.getTime() >= player.getLength()) {
+        console.log("Trying to stop");
+        player.stop().then(() => {
+            console.log("stopped");
+            player.play(process.argv[2]);
+        });
+    }
 }, 1000);
 
 setTimeout(() => {
-    console.log("length:", player.getLength());
+    console.log("set speed to 1.5");
     player.setSpeed(1.5);
-}, 5000);
+}, 3000);

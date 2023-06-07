@@ -32,9 +32,11 @@ private:
     int currentByte{0};
     int startByte;
     int totalFrames;
+    bool eof{false};
 
 public:
     WAVDecoder(String fileName);
+    ~WAVDecoder() { file.close(); }
     Ref<Metadata> getMetadata() override;
     Ref<Buffer> getData(i32 size) override;
     i32 getCurrentFrame() override;

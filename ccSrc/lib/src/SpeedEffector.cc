@@ -8,6 +8,8 @@
 
 Ref<Buffer> SpeedEffector::getData(i32 size)
 {
+
+    LOCK;
     if (size < SECTION_SIZE)
     {
         throw std::runtime_error("SpeedEffector::getData: size too small, must be greater than " + std::to_string(SECTION_SIZE));
@@ -23,7 +25,7 @@ Ref<Buffer> SpeedEffector::getData(i32 size)
     int bufferIndex = 0, parentBufferIndex = 0;
     if (bytesInSection <= SECTION_SIZE)
     {
-        for (parentBufferIndex = 0; parentBufferIndex < neededSize; parentBufferIndex += SECTION_SIZE)
+        for (parentBufferIndex = 0; parentBufferIndex < neededSize - bytesInSection; parentBufferIndex += SECTION_SIZE)
         {
             std::copy(parentBuffer.begin() + parentBufferIndex, parentBuffer.begin() + parentBufferIndex + bytesInSection, buffer.begin() + bufferIndex);
             bufferIndex += bytesInSection;
@@ -31,7 +33,7 @@ Ref<Buffer> SpeedEffector::getData(i32 size)
     }
     else
     {
-        for (parentBufferIndex = 0; parentBufferIndex < neededSize; parentBufferIndex += SECTION_SIZE)
+        for (parentBufferIndex = 0; parentBufferIndex < neededSize - bytesInSection; parentBufferIndex += SECTION_SIZE)
         {
             std::copy(parentBuffer.begin() + parentBufferIndex, parentBuffer.begin() + parentBufferIndex + SECTION_SIZE, buffer.begin() + bufferIndex);
             std::copy(parentBuffer.begin() + parentBufferIndex, parentBuffer.begin() + parentBufferIndex + bytesInSection - SECTION_SIZE, buffer.begin() + bufferIndex + SECTION_SIZE);
@@ -41,16 +43,32 @@ Ref<Buffer> SpeedEffector::getData(i32 size)
 
     if (bufferIndex < size)
     {
-        parentBufferIndex -= size - bufferIndex;
+        parentBufferIndex = parentBuffer.size() - size + bufferIndex;
+
         std::copy(parentBuffer.begin() + parentBufferIndex, parentBuffer.end(), buffer.begin() + bufferIndex);
     }
 
     return buffer;
 }
 
-double SpeedEffector::getRealSpeed(int size) const
+double SpeedEffector::getRealSpeed(int size)
 {
+
+    LOCK;
     int neededFrames = (size * speedPercent / 100) / BIG_FRAME_SIZE;
     int neededSize = neededFrames * BIG_FRAME_SIZE;
     return static_cast<double>(size) / neededSize;
+}
+
+int SpeedEffector::getSpeedPercent()
+{
+
+    LOCK;
+    return speedPercent;
+}
+
+void SpeedEffector::setSpeedPercent(int speedPercent)
+{
+    LOCK;
+    this->speedPercent = speedPercent;
 }

@@ -9,6 +9,7 @@
     "wgen": "wrappergen",
     "buildall": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=run && cmake-js configure --debug -- -DRUN_WRAPPERGEN=qwe && cmake-js build --debug && tsc --build",
     "build": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=qwe && cmake-js build --debug && tsc --build",
+    "asanbuild": "cmake-js configure --debug -CDRUN_WRAPPERGEN=qwe -CDADD_ASAN=add && cmake-js build --debug -CDADD_ASAN=add && tsc --build",
     "buildjs": "tsc --build",
     "clean": "cmake-js clean",
     "genwrapper": "cmake-js configure --debug -- -DRUN_WRAPPERGEN=run",

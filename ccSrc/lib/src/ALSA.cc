@@ -16,6 +16,7 @@ ALSA::ALSA(Provider &provider, u32 frames)
     : provider{provider}, metadata{provider.getMetadata()}, frames{frames}
 {
 
+
     /* Open PCM device for playback. */
     CK_SND(snd_pcm_open, (&handle, "default", SND_PCM_STREAM_PLAYBACK, 0));
 
@@ -67,17 +68,13 @@ ALSA::ALSA(Provider &provider, u32 frames)
 
 ALSA::~ALSA()
 {
-    if (playThread)
-    {
-        playThread->join();
-    }
-    snd_pcm_drain(handle);
-    snd_pcm_close(handle);
-    snd_mixer_close(mixer);
+    snd_pcm_hw_params_free(hwParams);
+    snd_pcm_sw_params_free(swParams);
 }
 
 void ALSA::startPlay()
 {
+
     if (playThread)
     {
         throw std::runtime_error("already playing");
@@ -88,6 +85,7 @@ void ALSA::startPlay()
 
 void ALSA::play()
 {
+
     do
     {
         std::unique_lock<std::mutex> lock(mutex);
@@ -101,14 +99,18 @@ void ALSA::play()
             lock.unlock();
     } while (playInterleave());
 
-    {
-        std::scoped_lock<std::mutex> lock(mutex);
-        control = STOP;
-    }
+    snd_pcm_drop(handle);
+    snd_pcm_close(handle);
+    return;
 }
 
 bool ALSA::playInterleave()
 {
+    std::scoped_lock<std::mutex> lock(mutex);
+
+    if(control == STOP)
+        return false;
+
     int error;
     if ((error = snd_pcm_wait(handle, 1000)) < 0)
     {
@@ -132,16 +134,11 @@ bool ALSA::playInterleave()
     }
 
     if (framesToDeliver < frames)
-    {
         return true;
-    }
+    
+    snd_pcm_delay(handle, &currentFrame);
 
-    {
-        std::scoped_lock<std::mutex> lock(mutex);
-        snd_pcm_delay(handle, &currentFrame);
-    }
-
-    auto buffer = provider.getData(size);
+    auto &buffer = provider.getData(size);
     if (buffer.size() < size)
     {
         printf("End of file, buffer size: %d\n", buffer.size());
@@ -176,6 +173,7 @@ bool ALSA::playInterleave()
 
 void ALSA::resume()
 {
+
     {
         std::scoped_lock<std::mutex> lock(mutex);
         snd_pcm_pause(handle, 0);
@@ -186,6 +184,7 @@ void ALSA::resume()
 
 void ALSA::pause()
 {
+
     {
         std::scoped_lock<std::mutex> lock(mutex);
         snd_pcm_pause(handle, 1);
@@ -196,6 +195,7 @@ void ALSA::pause()
 
 void ALSA::setVolume(int volume)
 {
+
     snd_mixer_elem_t *elem = snd_mixer_first_elem(mixer);
     while (elem != NULL)
     {
@@ -217,12 +217,14 @@ void ALSA::setVolume(int volume)
 
 i32 ALSA::getCurrentFrame()
 {
+
     std::scoped_lock<std::mutex> lock(mutex);
     return currentFrame;
 }
 
 void ALSA::refreshBuffer()
 {
+
     std::scoped_lock<std::mutex> lock(mutex);
     snd_pcm_drop(handle);
     snd_pcm_prepare(handle);
@@ -230,14 +232,16 @@ void ALSA::refreshBuffer()
 
 void ALSA::stop()
 {
+
     {
         std::scoped_lock<std::mutex> lock(mutex);
         control = STOP;
     }
     if (playThread)
     {
+        printf("join play thread\n");
         playThread->join();
+        printf("play thread joined\n");
         playThread = nullptr;
-        snd_pcm_drop(handle);
     }
 }

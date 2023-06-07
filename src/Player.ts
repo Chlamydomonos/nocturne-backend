@@ -1,7 +1,8 @@
 import * as fs from 'fs';
-import { ALSA, FFDecoder, SpeedEffector } from './generated';
+import { ALSA, FFDecoder, SpeedEffector, WAVDecoder } from './generated';
 import { getSampleRate } from './CCLibWrapper';
 import { IgnoreNocturne } from './reflect';
+import path from 'path';
 
 export enum PlayStatus {
     STOP = 0,
@@ -17,10 +18,13 @@ export class Player {
     private volume = 100;
 
     @IgnoreNocturne
+    private speed = 1;
+
+    @IgnoreNocturne
     private playStatus = PlayStatus.STOP;
 
     @IgnoreNocturne
-    private decoder?: FFDecoder;
+    private decoder?: FFDecoder | WAVDecoder;
 
     @IgnoreNocturne
     private speedEffector?: SpeedEffector;
@@ -48,9 +52,19 @@ export class Player {
         if (this.alsa) {
             await this.stop();
         }
-        this.decoder = new FFDecoder(file);
+        if(path.extname(file) === '.wav') {
+            console.log('Using WAVDecoder');
+            this.decoder = new WAVDecoder(file);
+        } else {
+            console.log('Using FFDecoder');
+            this.decoder = new FFDecoder(file);
+        }
         this.speedEffector = new SpeedEffector(this.decoder);
         this.alsa = new ALSA(this.speedEffector, this.size);
+
+        this.speedEffector.setSpeedPercent(this.speed * 100);
+        this.alsa.setVolume(this.volume);
+
         this.alsa.startPlay();
 
         this.playStatus = PlayStatus.PLAY;
@@ -65,6 +79,7 @@ export class Player {
         return new Promise<number>((resolve, _reject) => {
             const intervalId = setInterval(() => {
                 if (this.alsa!.hasStopped()) {
+                    console.log("Alsa has stopped");
                     clearInterval(intervalId);
                     this.alsa = undefined;
 
@@ -113,6 +128,7 @@ export class Player {
         if (!this.alsa) {
             return 1;
         }
+        this.speed = speed;
         this.setTime(this.getTime());
         this.speedEffector!.setSpeedPercent(speed * 100);
         return 0;
@@ -122,7 +138,7 @@ export class Player {
         if (!this.speedEffector) {
             return -1;
         }
-        return this.speedEffector.getSpeedPercent() / 100;
+        return (this.speed = this.speedEffector.getSpeedPercent() / 100);
     }
 
     setTime(time: number) {
